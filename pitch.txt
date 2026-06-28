@@ -1,0 +1,112 @@
+Project Idea: ARSENAL — 6-DOF Modular Robotic Arm with Custom Motor Controller
+
+Proposed tier: T1
+
+I'm designing:
+A fully custom 6 degree-of-freedom robotic arm, built from the ground up across hardware, firmware, and mechanical design. The project spans six stages:
+
+Stage 1 — Custom STM32F446-Based Motor Controller (Dev Board)
+A purpose-built motion control board around the STM32F446RET6 MCU, designed specifically for real-time 6-axis stepper control. It replaces off-the-shelf dev boards that are either too pin-constrained, lack real-time performance for simultaneous joint coordination, or carry unnecessary wireless peripherals that add noise. The board features:
+  - 6-axis stepper control with TMC2209-compatible headers (for NEMA 17s) and TMC5160-compatible headers (for NEMA 23s)
+  - Full quadrature encoder feedback on all six joints
+  - CAN bus for multi-board communication in future systems
+  - UART interface to Raspberry Pi 3B+ for IK offloading
+  - Onboard ICM-42688 IMU, MicroSD logging, RTC
+  - Dual power domain — XT60 motor input and USB-C logic, fully isolated
+  Designed in KiCad, fabricated via JLCPCB, firmware in STM32CubeIDE (HAL). The F446 was chosen over the common F401/F411 for its additional hardware timers (necessary for simultaneous encoder reading across all 6 axes) and its native dual CAN bus support.
+
+Stage 2 — Actuator Design
+Each of the six joints will be built around a complete actuator module: motor + gearbox + driver, all designed to be self-contained and repeatable. The gearbox choice is between planetary and cycloidal. Cycloidal reducers offer excellent torque distribution and backlash reduction but require a significant number of bearings and precision off-the-shelf parts to function reliably. Planetary gearboxes are the preferred choice here, they can be almost entirely 3D printed in PETG with just a metal axle at the output stage, making them far more practical for iteration and reprinting if tolerances need adjustment.
+
+The gear ratio will be selected per joint based on torque requirements, the base and shoulder joints (NEMA 23s) will run higher reduction ratios given the load they carry, while the upper joints (NEMA 17s) will use lighter reductions to preserve speed. Each actuator module will be designed so the motor, gearbox, and driver board are integrated into a single bolt-on unit, making joint replacement or upgrades straightforward. Encoder discs or magnetic encoders will be integrated at the output shaft of each gearbox rather than the motor shaft, giving true output-side position feedback and eliminating gearbox backlash from the control loop.
+
+Stage 3 — Arm Design
+The full arm will be designed in Fusion 360 from scratch. The structure will be 6 DOF with joints arranged in a configuration inspired by industrial arm layouts — two large base joints (NEMA 23) handling the heaviest loads, and four upper joints (NEMA 17) handling lighter, more precise articulation. The entire arm structure will be printed in PETG for its balance of strength, temperature resistance, and printability compared to PLA.
+
+The design philosophy is modularity throughout, each link and joint housing will be designed to be independently printable, replaceable, and adjustable. Cable routing will be internalized through the links where possible to keep the build clean. The wrist will feature a standardized mechanical and electrical interface for the quick-swap end effector system designed in Stage 5. All hardware (inserts, bolts, bearings) will be selected from standard sizes available off the shelf. The arm will be printed on my own 3D printer (arriving soon), giving me full control over print settings, tolerances, and iteration speed.
+
+Stage 4 — Assembly & First Milestone
+This stage is full system integration, mounting actuators into the arm structure, routing and terminating all wiring, connecting the custom dev board to the TMC drivers and encoders, and bringing up the full software stack.
+
+The software side will run a two-layer architecture: the STM32 handles low-level real-time joint control (step generation, encoder reading, limit switch handling, closed-loop PID), while the Raspberry Pi 3B+ runs the inverse kinematics pipeline, takes a target pose in Cartesian space, and sends joint angle commands to the STM32 over UART. The IK will be implemented using a Python library (likely ikpy or a custom Jacobian solver), with forward kinematics validated against physical movement before full IK is enabled.
+
+The milestone for this stage is deliberate and specific: the arm will sign it's name "Arsenal" on a surface. This requires smooth coordinated motion across all 6 axes simultaneously, it is not achievable with jerky or uncalibrated control, making it a genuine and demanding proof of function.
+
+Stage 5 — Hot-Swappable End Effectors (time permitting)
+The wrist interface will support mechanically and electrically hot-swappable end effectors. The mechanical side will use a quick-release locking ring, similar in concept to a bayonet mount, that allows an effector to be attached and locked with a short twist, and released just as fast. The electrical interface will be a standardized multi-pin connector at the wrist that carries power, ground, and a signal line, allowing the arm to identify which effector is currently attached (via a resistor ID scheme or a small identification chip on each effector) and configure itself accordingly without any manual input.
+
+The goal is for the arm to be able to swap its own end effectors autonomously, a dock will hold available effectors in fixed positions, and the arm will navigate to the dock, release the current effector, and pick up the target one. This is a non-trivial motion planning and precision task and is the most experimental part of the project.
+
+Planned end effectors:
+  - Rigid claw — for picking up hard, solid objects
+  - TPU claw — compliant and gentle, for soft or delicate objects
+  - Marker/pen holder — for writing and drawing tasks
+  - Additional effectors as the interface matures
+
+Stage 6 — Wearable Arm Controller (time permitting)
+The final stage adds a wearable controller worn on my right arm, allowing real-time teleoperation of the robotic arm by mirroring my own arm's motion. The wearable will use IMUs (likely multiple MPU-6050 or BNO085 units) placed at the upper arm, forearm, and wrist to capture the full pose of my arm in 3D space. The fused orientation data will be streamed wirelessly to the Raspberry Pi, which will resolve the target pose and feed it into the same IK pipeline used for programmatic control, meaning no changes to the lower-level control stack are needed.
+
+The intended experience is intuitive and direct: raise my elbow, the arm raises its elbow. Rotate my wrist, it rotates its wrist. This stage transforms AURA from a programmed machine into a responsive extension of the human arm, which is the vision the project has been building toward from the start.
+
+---
+
+Inspo / references:
+- https://www.instagram.com/p/DVnc1L0p0DD/
+- https://www.instagram.com/olekstepanenko/reel/DVKF7HHEQeZ/
+
+---
+
+Past projects:
+I've only built projects through Hack Club's Construct YSWS (linked below) up until now, but beyond that I have experience building drones, gesture-controlled cars, and various electronics projects. This arm is my first move into something at this level of complexity — multi-axis robotics, custom silicon, and real-time coordinated motion, all together, though I have worked with most of this separately.
+- https://construct.hackclub.com/dashboard/projects/3312
+- https://construct.hackclub.com/dashboard/projects/3040
+- https://construct.hackclub.com/dashboard/projects/2847
+- https://construct.hackclub.com/dashboard/projects/2787
+- https://construct.hackclub.com/dashboard/projects/2766
+
+---
+
+Why this is worth almost $500:
+This isn't a kit build or a remix — every layer of this project is being designed from scratch. The custom dev board alone requires PCB design, component sourcing, and firmware written for simultaneous 6-axis real-time control. The mechanical design is original, the gearboxes are custom-printed, and the software stack spans bare-metal STM32 firmware, a Raspberry Pi IK pipeline, and eventually wearable sensor fusion. The scope — six independent actuator modules, a custom PCB, a full arm structure, and an IK-controlled motion system — places this well beyond typical single-board hobbyist projects. The BOM alone approaches $500 before any iteration or reprints are factored in.
+
+---
+
+Rough BOM:
+
+Motors & Drivers
+* NEMA 17 Stepper Motors x4 — $40.00
+* NEMA 23 Stepper Motors x2 — $60.00
+* TMC2209 Stepper Driver Modules x4 — $20.00
+* TMC5160 Stepper Driver Modules x2 — $30.00
+
+Custom Dev Board (Stage 1)
+* STM32F446RET6 MCU — $5.00
+* ICM-42688-P IMU — $5.00
+* PCB Fabrication — JLCPCB (5 pcs) — $50.00
+* Passives, connectors, regulators, misc — $25.00
+* XT60 Connectors (pair) — $5.00
+* USB-C Connector + ESD protection — $5.00
+* MicroSD slot + RTC (DS3231) — $5.00
+* CAN transceiver (SN65HVD230 x2) — $5.00
+
+Mechanical & Structural
+* PETG Filament — 2 kg — $20.00
+* Bearings assortment (gearboxes + joints) — $20.00
+* Metal axles / shafts + hardware (bolts, inserts) — $15.00
+* Limit switches x6 — $10.00
+* Magnetic encoders (AS5048A x6) — $45.00
+
+Wiring & Power
+* XT60 pigtails, wire (18AWG/22AWG), heat shrink — $15.00
+* 12V / 24V PSU (motor rail) — $20.00
+* Dupont connectors + pin headers + JST kit — $10.00
+
+Other
+* Misc. Components & Margin — $50.00
+
+* Total (estimated): ~$450.00-500.00
+
+Note: These figures are approximate and subject to significant variation. Final costs depend heavily on assembly method, component sourcing, and supplier availability. Being based in India, several components will likely need to be imported, meaning customs duties and shipping costs could substantially inflate the actual spend — so a large margin should be assumed on top of this estimate. And I think I am underestimating the total Custom DevBoard costs.
+Raspberry Pi 3B+ already owned — not included in BOM.
+Filament cost assumes ~1.5 kg actual print usage across full arm + iterations.
+Please Note: The time-permitted stages (5 and 6) are dependent on whether the four core stages are completed before Forge ends and before college begins, both in August.
