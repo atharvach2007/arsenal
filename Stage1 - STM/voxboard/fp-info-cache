@@ -1,4 +1,4 @@
-27231485702753206
+27281413723443410
 AP7361C_33Y5_13
 SOT89-5_DIO
 
@@ -21,6 +21,20 @@ AP7361C-33Y5-13
 5
 5
 ARSENAL_PROJ
+D8-L
+
+SN65HVD230DR 
+0
+8
+8
+ARSENAL_PROJ
+D8-M
+
+SN65HVD230DR 
+0
+8
+8
+ARSENAL_PROJ
 MODULE_TMC2209_SILENTSTEPSTICK
 
 
@@ -42,6 +56,160 @@ Integrated Circuit
 8
 8
 ARSENAL_PROJ
+TPS54331DR
+
+SN65HVD230DR 
+0
+8
+8
+ARSENAL_PROJ
+XT60PWM
+XT60PW-M-3
+Power Supply
+0
+4
+4
+Arsenal_Lib
+AMASS_XT60PW-M_1x02_P7.20mm_Horizontal
+Connector XT60 Horizontal PCB Female, https://www.tme.eu/Document/b13629717d44ae038681dba08d18c0b6/XT60PW-M.pdf
+RC Connector XT60
+0
+4
+2
+Arsenal_Lib
+AP7361C-33Y5-13_SOT89-5_DIO
+
+AP7361C-33Y5-13 
+0
+5
+5
+Arsenal_Lib
+B3U1000PM
+B3U-1000PM-3
+Switch
+0
+2
+2
+Arsenal_Lib
+CONN_3557-2_KEY
+
+3557-2 
+0
+4
+2
+Arsenal_Lib
+Crystal_SMD_3225-4Pin_3.2x2.5mm
+SMD3225/4, Crystal, 3.2x2.5mm package, SMD, generated with kicad-footprint-generator make_crystal.py, http://www.txccrystal.com/images/pdf/7m-accuracy.pdf
+
+0
+4
+4
+Arsenal_Lib
+DMX3_TEX
+
+ESD122DMXR 
+0
+3
+3
+Arsenal_Lib
+JST_GH_BM03B-GHS-TBT_1x03-1MP_P1.25mm_Vertical
+JST GH series connector, BM03B-GHS-TBT (http://www.jst-mfg.com/product/pdf/eng/eGH.pdf), generated with kicad-footprint-generator
+connector JST GH vertical
+0
+5
+4
+Arsenal_Lib
+JST_GH_BM04B-GHS-TBT_1x04-1MP_P1.25mm_Vertical
+JST GH series connector, BM04B-GHS-TBT (http://www.jst-mfg.com/product/pdf/eng/eGH.pdf), generated with kicad-footprint-generator
+connector JST GH vertical
+0
+6
+5
+Arsenal_Lib
+JST_GH_BM07B-GHS-TBT_1x07-1MP_P1.25mm_Vertical
+JST GH series connector, BM07B-GHS-TBT (http://www.jst-mfg.com/product/pdf/eng/eGH.pdf), generated with kicad-footprint-generator
+connector JST GH vertical
+0
+9
+8
+Arsenal_Lib
+JST_VH_B4P-VH-FB-B_1x04_P3.96mm_Vertical
+JST VH series connector, B4P-VH-FB-B, shrouded (http://www.jst-mfg.com/product/pdf/eng/eVH.pdf),  generated with kicad-footprint-generator
+connector JST VH vertical
+0
+4
+4
+Arsenal_Lib
+LQFP64-10x10mm
+
+STM32F446RET6 
+0
+64
+64
+Arsenal_Lib
+L_KOHERELEC_MDA7050_7.3x6.6mm
+Shielded Power Inductors (https://www.bourns.com/docs/product-datasheets/srp7028a.pdf)
+Shielded Inductors Bourns SMD SRP7028A
+0
+2
+2
+Arsenal_Lib
+MODULE_TMC2209_5160
+
+
+0
+18
+18
+Arsenal_Lib
+PinHeader_1x02_P2.54mm_Vertical
+Through hole straight pin header, 1x02, 2.54mm pitch, single row
+Through hole pin header THT 1x02 2.54mm single row
+0
+2
+2
+Arsenal_Lib
+PinHeader_1x05_P2.54mm_Vertical
+Through hole straight pin header, 1x05, 2.54mm pitch, single row
+Through hole pin header THT 1x05 2.54mm single row
+0
+5
+5
+Arsenal_Lib
+SW_PUSH_B3U-1000PM
+
+
+0
+2
+2
+Arsenal_Lib
+TPS54331DR_SOIC-8
+
+SN65HVD230DR 
+0
+8
+8
+Arsenal_Lib
+Texas_X2SON-3_0.6x1mm
+
+
+0
+3
+3
+Arsenal_Lib
+USBLC6-2P6_SOT-666_STM
+
+USBLC6-2P6 
+0
+6
+6
+Arsenal_Lib
+USB_C_Receptacle_GCT_USB4110
+USB 2.0 Type C Receptacle, GCT, 16P, top mounted, horizontal, 5A, https://gct.co/files/drawings/usb4110.pdf
+USB 2.0 C Type-C Receptacle SMD 16P 16C USB4110-GF-A
+0
+16
+13
+Arsenal_Lib
 XT60PWM
 XT60PW-M-3
 Power Supply
@@ -75998,6 +76166,27 @@ DIL DIP PDIP 2.54mm 7.62mm 300mil
 0
 4
 4
+PESD2CANFD24V-TR
+SOT23_TO-236AB_NEX
+
+PESD2CAN_215 
+0
+3
+3
+PESD2CANFD24V-TR
+SOT23_TO-236AB_NEX-L
+
+PESD2CAN_215 
+0
+3
+3
+PESD2CANFD24V-TR
+SOT23_TO-236AB_NEX-M
+
+PESD2CAN_215 
+0
+3
+3
 Package_BGA
 Alliance_TFBGA-36_6x8mm_Layout6x8_P0.75mm
 Alliance TFBGA-36, NSMD, 6.0x8.0mm, 36 Ball, 6x8 Layout, 0.75mm Pitch, generated with kicad-footprint-generator ipc_bga_generator.py, https://www.alliancememory.com/wp-content/uploads/pdf/AS6C1008_Mar_2023V1.2.pdf#page=13
@@ -100813,6 +101002,13 @@ Logo WEEE
 0
 0
 0
+TPD4E02B04DQAR
+DQA0010A
+
+TPD4E02B04DQAR 
+0
+10
+10
 TerminalBlock
 TerminalBlock_MaiXu_MX126-5.0-02P_1x02_P5.00mm
 terminal block MaiXu MX126-5.0-02P, 2 pins, pitch 5mm, size 10.5x7.8mm, drill diameter 1.3mm, pad diameter 2.8mm, https://www.lcsc.com/datasheet/lcsc_datasheet_2309150913_MAX-MX126-5-0-03P-GN01-Cu-S-A_C5188435.pdf, script-generated using https://gitlab.com/kicad/libraries/kicad-footprint-generator/-/tree/master/scripts/TerminalBlock_MaiXu

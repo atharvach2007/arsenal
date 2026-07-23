@@ -1,0 +1,41 @@
+# ARSENAL — 6-DOF Modular Robotic Arm
+
+ARSENAL is a 6-DOF robotic arm built completely from scratch, no kits, no shortcuts. The whole thing spans custom PCB design, 3D printed gearboxes, and a two layer software stack with an STM32 handling real time joint control and a Raspberry Pi running inverse kinematics.
+The arm runs 6 stepper motors (4 NEMA 17s, 2 NEMA 23s) with magnetic encoders on every joint for accurate position feedback, all driven by a purpose built motion controller board around the STM32F446. The proof of concept milestone is having the arm sign its own name, which is a genuinely hard benchmark for coordinated 6 axis motion.
+If time permits, the plan extends to hot swappable end effectors (rigid claw, soft claw, pen holder) and a wearable IMU based controller that lets you teleoperate the arm by just moving your own arm.
+
+# 2026-06-13: Stage 1 — Custom STM32F446-Based Motor Controller (Dev Board) - DEVLOG3 - POWER CIRCUITRY
+
+**Total time spent: 15 hours**
+
+So yeah, this really fked me over. So for power, I'm using a 24V input from an external source (wall power mp) using the xt60 power connector. So to run my mcu I obviously had to step this down to 3.3v or else all goes boom. So for this issue I made my buck convertor onboard, the only issue was that this circuitry was hell. 
+![Screenshot 2026-06-14 013334.png](https://cdn.hackclub.com/019ec2e4-057a-7d6b-ad13-bdf9c7ff0823/Screenshot%202026-06-14%20013334.png)
+So this is the general application circuit provided in the datasheet of the IC im using (tps54331), and I mean on the surface this is exactly what I need, or not.
+This is a direct 7-28V -> 3.3V convertor, I couldve gone with this yes, but this usually produces a noisy output, which would not be ideal for a stable operating mcu. So the plan is 24v->5v buck and then 5v->3.3v LDO, the ldo provides the stabilization needed to the output and reduces noise drastically. Now the problem was I had to wire the buck as per 24v->5v, now not a lot changes here, only the compensation network, the voltage divider resistors, and the main inductor changes, all derivable from formulae in teh datasheet, simple right? NO
+![Screenshot 2026-06-14 013350.png](https://cdn.hackclub.com/019ec2ea-91cd-7bf3-bbb6-6c0d3279d3aa/Screenshot%202026-06-14%20013350.png)
+The biggest headache of this entire part, the compensation network, because the datasheet has no reference as to what ALPHA IS, NOT WRITTEN ANYWHERE. Yeah and after I assume alpha to be the gain, which turns out to be true, THE DATASHEETS CALCULATIONS FOR THEIR OWN NETWORK DOES NOT MATCH UP. Yeah and it gets better, so ceramic capacitors experience something called derating, basically at higher temps and/or voltages, their capacitances dip, so at 5v a lot of 10v capacitors become around 30-40% of their intial value, so a 100uf 10V ceramic becomes a 30-40uf capacitor, MORE THAN HALF CAPACITY LOST. So this was very crucial for my output capacitors, since they will be the ones under load, so I had to scour the entire jlcpcb parts library for capacitors that dont derate by fkin 60-70% at 5V. At the end I settled with a 16V ceramic I found with manageable deration. And the best part, MANY DATASHEETS DONT HAVE THE DERATION CURVE ITSELF (the deration curve is used to derive at what voltage how much deration occurs). I switched to electrolytic caps midway, then I needed the ESR of these, WHICH AGAIN WAS MISSING FROM THE DATASHEETS. It's crazy how much Ive raged for this single portion.
+![Screenshot 2026-06-14 013306.png](https://cdn.hackclub.com/019ec2f2-8a1a-7d9f-8fcb-3766059473d2/Screenshot%202026-06-14%20013306.png)
+Now, I have a problem, again. I have to wire up the usbC 2.0 connector and the problem Im facing is since we have external power we cant accept VBUS, but what I also want to do is have the mcu on when only the usb is connected but the battery is not. Basically, battery -> whole system (motors, drivers, mcu) on, Battery + usb -> whole system (motors, drivers, mcu) on but powered by the battery, the usb is for programming only here, usb only -> only mcu on for programming. I have thought of using an MUX to monitor both inputs, VBUS through an LDO ->3.3v, main power 3.3V. I will be working on this next.
+PS: posting this the night of the Boys Trip😋
+
+# 2026-06-08: Stage 1 — Custom STM32F446-Based Motor Controller (Dev Board) - DEVLOG2 - BASE SCHEMATICS
+
+**Total time spent: 5 hours**
+
+So after the last journal I kind of went awol, but I'm back🔥. Now I started working on the main schematics of the board, starting with the mcu. I connected up the mcu power grid, including the decoup capacitors, then the clock circuit etc, all configured using STM32CubeMX (really fkin useful tool). 
+![image.png](https://cdn.hackclub.com/019ea8c2-3c02-7894-82e1-39403e35d414/image.png)
+Now this took me a lot of time as I am simultaneously looking up for niche or specific parts on jlcpcb part picker, ie things like my crystal resonator which took a tool of time to find cause apparently on jlc crystal resonators are now referred to as crystals, plus my clock configuration of the stm32 chip was smh not auto calculating and my hlck, basically the chip's clock speed was capped at 16mhz WHEN IT CAN GO 180, so that took me a lot of time to figure out as that part is literally said to be automatic so it was very hard to find solutions, but after a few tweaks in the config, the 180 speed was verified for a 8MHz resonator. 
+![image.png](https://cdn.hackclub.com/019ea8c4-69ae-7ee7-abe8-246cd3cba744/image.png)
+Now I will be working towards attaching a usbC header, and then creating the main 24->3.3V power circuit, since I plan on using external 24V power, which i will step down using an onboard buck convertor. Then I will work towards making the connection protocols, ie uarts and spis for the drivers, Im also gonna probably add jumper headers to most of the unconnected gpios so that later on I can expand my board's capabilities.
+![image.png](https://cdn.hackclub.com/019ea8c1-ffa5-7f88-bb71-47e1628bfe80/image.png)
+
+# 2026-05-29: Stage 1 — Custom STM32F446-Based Motor Controller (Dev Board) - DEVLOG1 - RESEARCH
+
+**Total time spent: 6 hours 30 minutes**
+
+So my first journal on forge. I'm quite new to devboard designing for stm32, so I needed to get familiar with the mcu itself, as it turns out it's quite complicated, but I found resources that would make it simpler. So first I needed to figure out how my devboard is gonna work, basically what goes where and how it goes.
+![image.png](https://cdn.hackclub.com/019e75a2-df81-7159-aad7-638fb5ceeae1/image.png)
+My boards needs an mcu of course, along with all the components needed to use the mcu, then I need 4x Nema 17s and their drivers, these 4 motors will be of different torque ratings, the elbow, would need to be the highest rated nema17, while the yaw would be lowest, though this will be purely based on availability. Along with these for the base and shoulder I need 2 Nema23s and their 5160 drivers. All of the motors will have magnetic encoders on them so I can track their rotation accurately. So my board will have 2 uart connections for the 4 tmc2209s (NEMA17 drivers), 1 uart split for 2 drivers, and 1 spi connection for 2 tmc5160 (NEMA23 drivers). The 6 encoders will also share 1 spi connection, and the 3rd spi will be left open, i might add a display or smg, not needed in the initial stages though. Now ive been thinking about adding an esp32 chip as well, mainly due to combined wifi, bluetooth, and mainly esp-now, since I could potentially make a controller using joysticks, a screen and an esp32 to control the arm myself, but im figuring some stuff out for this, since I could make a separate esp board entirely for wireless connections and hook that up with uart to the rpi. Im gonna figure this out soon. After this research (4 hours which i forgot to lapse btw), i started watching a video on stm32 design by Phil's lab, what a legend. After the schematics part was done, I started reading the application notes for power and usb, and the f446re datasheet.
+The research is hopefully done for now, onto making the schematics.
+This reading was a boring thing to do but lapsed here : https://lapse.hackclub.com/timelapse/VTKueXd4oU-n
+
